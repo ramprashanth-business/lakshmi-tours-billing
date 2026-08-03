@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Applies to the customers, trips, and invoices collections.
+    // Every document must carry an ownerId field matching the signed-in user's uid.
+    match /{collection}/{docId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid;
+    }
+  }
+}
